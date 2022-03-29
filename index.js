@@ -21,29 +21,30 @@ mongoose
 	});
 
 // Routes
-app.get("/student/:addressId", async (req, res) => {
-	const student = await Student.findById(req.params.addressId).populate("Address");
-
-	res.json(student);
-});
-
+//create student 
 app.post("/students", async (req, res) => {
 	await Student.create(req.body);
 
 	res.status(201).send("Student created");
 });
-
+// get address by id
 app.get("/:addressId", async (req, res) => {
 	const address = await Address.findById(req.params.addressId);
 
 	res.json(address);
 });
 
-app.post("/student/:studnetId/address", async (req, res) => {
+app.get("/student/:studentId", async (req, res) => {
+	const student = await Student.findById(req.params.studentId).populate("addresses");
+
+	res.json(student);
+});
+// create address into student's array 
+app.post("/student/:studentId/address", async (req, res) => {
 	const address = await Address.create(req.body);
-	await Student.findByIdAndUpdate(req.params.studnetId, {
+	await Student.findByIdAndUpdate(req.params.studentId, {
 		$push: { addresses: address._id },
-	}).populate("Address");
+	})
 
 	res.status(201).send("Address created");
 });
